@@ -1,5 +1,6 @@
 # RdNapTransCpp
 C++ 14 implementation of RDNAPTRANS™  
+Can still be improved a lot (main issue: no use of smart pointers yet). But it is meant as a first stab at modernizing the code. More to come later hopefully.  
 Modeled according to Java RdNapTrans (https://github.com/PDOK/rdnaptrans-java  )  
 Converts Spatial Coordinates from RD_New (EPSG:28992 https://spatialreference.org/ref/epsg/amersfoort-rd-new/) to ETRS89 (EPSG:4258 https://spatialreference.org/ref/epsg/4258/) and back.  
 Original (C) source has been retrieved via:
