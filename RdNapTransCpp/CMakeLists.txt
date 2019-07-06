@@ -4,6 +4,6 @@
 cmake_minimum_required (VERSION 3.8)
 
 # Add source to this project's executable.
-add_executable ("RdNapTransCpp.cpp" "RdNapTransCpp.h" "Cartesian.cpp" "Cartesian.h" "Geographic.cpp" "Geographic.h" "Constants.h" "Helpers.h" "Helpers.cpp" "Transformer.h" "Transformer.cpp" "GrdFile.h" "GrdFile.cpp" "Runner.cpp")
+add_executable ("Cartesian.cpp" "Cartesian.h" "Geographic.cpp" "Geographic.h" "Constants.h" "Helpers.h" "Helpers.cpp" "Transformer.h" "Transformer.cpp" "GrdFile.h" "GrdFile.cpp" "Runner.cpp")
 
 # TODO: Add tests and install targets if needed.
