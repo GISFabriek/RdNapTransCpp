@@ -1,3 +1,12 @@
+// ***********************************************************************
+// Author           : Willem A. Ligtendag, De GISFabriek
+// Created          : 07-06-2019
+//
+// Last Modified By : Willem A. Ligtendag, De GISFabriek
+// Last Modified On : 07-07-2019
+// ***********************************************************************
+// C++ PORT from C version of RDNAPTRANS
+// ***********************************************************************
 #include "Transformer.h"
 #include "Constants.h"
 #include "Helpers.h"
@@ -5,7 +14,24 @@
 
 const std::string GRID_FILE_GEOID = "nlgeo04.grd";
 
-Cartesian Transformer::etrs2rd(Geographic etrs)
+/*
+**--------------------------------------------------------------
+**    Function name: etrs2rd
+**    Description:   convert ETRS89 coordinates to RD coordinates
+**
+**    Parameter      Type        In/Out Req/Opt Default
+**    etrs           Geographic  in     req     none
+**    -              Cartesian   out    -       none
+**
+**    Additional explanation of the meaning of parameters
+**    phi_etrs, lambda_etrs, h_etrs  input ETRS89 coordinates
+**    x_rd, y_rd                     output RD coordinates
+**
+**    Return value: (besides the standard return values)
+**    none
+**--------------------------------------------------------------
+*/
+Cartesian Transformer::etrs2rd(const Geographic& etrs)
 {
 	double x_rd;
 	double y_rd; 
@@ -14,8 +40,24 @@ Cartesian Transformer::etrs2rd(Geographic etrs)
 	return Cartesian(x_rd, y_rd, h_bessel);
 }
 
-
-Geographic Transformer::rd2etrs(Cartesian rd)
+/*
+**--------------------------------------------------------------
+**    Function name: rd2etrs
+**    Description:   convert RD coordinates to ETRS89 coordinates
+**
+**    Parameter      Type        In/Out Req/Opt Default
+**    rd             Cartesian    in     req     none
+**    -              Geographic   out    -       none
+**
+**    Additional explanation of the meaning of parameters
+**    x_rd, y_rd                    input RD coordinates
+**    phi_etrs, lambda_etrs, h_etrs output ETRS89 coordinates
+**
+**    Return value: (besides the standard return values)
+**    none
+**--------------------------------------------------------------
+*/
+Geographic Transformer::rd2etrs(const Cartesian& rd)
 {
 	double phi_etrs;
 	double lambda_etrs;
@@ -24,7 +66,24 @@ Geographic Transformer::rd2etrs(Cartesian rd)
 	return Geographic(phi_etrs, lambda_etrs, h_etrs);
 }
 
-Cartesian Transformer::etrs2rdnap(Geographic etrs)
+/*
+**--------------------------------------------------------------
+**    Function name: etrs2rdnap
+**    Description:   convert ETRS89 coordinates to RD coordinates
+**
+**    Parameter      Type        In/Out Req/Opt Default
+**    etrs           Geographic  in     req     none
+**    -              Cartesian   out    -       none
+**
+**    Additional explanation of the meaning of parameters
+**    phi_etrs, lambda_etrs, h_etrs  input ETRS89 coordinates
+**    x_rd, y_rd, z_rd               output RD coordinates
+**
+**    Return value: (besides the standard return values)
+**    none
+**--------------------------------------------------------------
+*/
+Cartesian Transformer::etrs2rdnap(const Geographic& etrs)
 {
 	double x_rd;
 	double y_rd;
@@ -33,7 +92,24 @@ Cartesian Transformer::etrs2rdnap(Geographic etrs)
 	return Cartesian(x_rd, y_rd, h_bessel);
 }
 
-Geographic Transformer::rdnap2etrs(Cartesian rd)
+/*
+**--------------------------------------------------------------
+**    Function name: rdnap2etrs
+**    Description:   convert RD coordinates to ETRS89 coordinates
+**
+**    Parameter      Type        In/Out Req/Opt Default
+**    rd             Cartesian    in     req     none
+**    -              Geographic   out    -       none
+**
+**    Additional explanation of the meaning of parameters
+**    x_rd, y_rd, z_rd                    input RD coordinates
+**    phi_etrs, lambda_etrs, h_etrs output ETRS89 coordinates
+**
+**    Return value: (besides the standard return values)
+**    none
+**--------------------------------------------------------------
+*/
+Geographic Transformer::rdnap2etrs(const Cartesian& rd)
 {
 	double phi_etrs;
 	double lambda_etrs;
@@ -73,9 +149,6 @@ int Transformer::etrs2rd(double phi_etrs, double lambda_etrs, double h_etrs,
 	double x_amersfoort_bessel;
 	double y_amersfoort_bessel;
 	double z_amersfoort_bessel;
-	double x_amersfoort_etrs;
-	double y_amersfoort_etrs;
-	double z_amersfoort_etrs;
 
 	/*
 	**--------------------------------------------------------------
@@ -85,9 +158,9 @@ int Transformer::etrs2rd(double phi_etrs, double lambda_etrs, double h_etrs,
 	Helpers::geographic2cartesian(Constants::PHI_AMERSFOORT_BESSEL, Constants::LAMBDA_AMERSFOORT_BESSEL, Constants::H_AMERSFOORT_BESSEL,
 	                     Constants::A_BESSEL, Constants::INV_F_BESSEL,
 		x_amersfoort_bessel, y_amersfoort_bessel, z_amersfoort_bessel);
-	x_amersfoort_etrs = x_amersfoort_bessel + Constants::TX_BESSEL_ETRS;
-	y_amersfoort_etrs = y_amersfoort_bessel + Constants::TY_BESSEL_ETRS;
-	z_amersfoort_etrs = z_amersfoort_bessel + Constants::TZ_BESSEL_ETRS;
+	const auto x_amersfoort_etrs = x_amersfoort_bessel + Constants::TX_BESSEL_ETRS;
+	const auto y_amersfoort_etrs = y_amersfoort_bessel + Constants::TY_BESSEL_ETRS;
+	const auto z_amersfoort_etrs = z_amersfoort_bessel + Constants::TZ_BESSEL_ETRS;
 
 	/*
 	**--------------------------------------------------------------
@@ -154,8 +227,10 @@ int Transformer::rd2etrs(double x_rd, double y_rd, double nap,
 
 	/*
 	**--------------------------------------------------------------
-	**    Calculate appoximated value of ellipsoidal Bessel height
-	**    The error made by using a constant for de Bessel geoid height is max. circa 1 meter in the ellipsoidal height (for the NLGEO2004 geoid model). This intoduces an error in the phi, lambda position too, this error is nevertheless certainly smaller than 0.0001 m.
+	**    Calculate approximated value of ellipsoidal Bessel height
+	**    The error made by using a constant for de Bessel geoid height is max. circa 1 meter in the 
+	**    ellipsoidal height (for the NLGEO2004 geoid model). This introduces an error in the phi, lambda position too,
+	**    this error is nevertheless certainly smaller than 0.0001 m.
 	**--------------------------------------------------------------
 	*/
 	const auto h_bessel = nap + Constants::MEAN_GEOID_HEIGHT_BESSEL;

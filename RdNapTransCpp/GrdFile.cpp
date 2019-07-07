@@ -1,3 +1,12 @@
+// ***********************************************************************
+// Author           : Willem A. Ligtendag, De GISFabriek
+// Created          : 07-06-2019
+//
+// Last Modified By : Willem A. Ligtendag, De GISFabriek
+// Last Modified On : 07-07-2019
+// ***********************************************************************
+// C++ PORT from C version of RDNAPTRANS
+// ***********************************************************************
 #include "GrdFile.h"
 #include <cmath>
 #include <string>
@@ -214,7 +223,10 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 	**--------------------------------------------------------------
 	*/
 	auto error = read_grd_file_header(grd_file, size_x, size_y, min_x, max_x, min_y, max_y, min_value, max_value);
-	if (error != 0) return -1;
+	if (error != 0)
+	{
+		return -1;
+	}
 
 	const auto step_size_x = (max_x - min_x) / (size_x - 1);
 	const auto step_size_y = (max_y - min_y) / (size_y - 1);
@@ -289,7 +301,10 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 	for (auto i = 0; i < 16; i++)
 	{
 		error = read_grd_file_body(grd_file, record_number[i], record_value[i]);
-		if (error != 0) return -1;
+		if (error != 0)
+		{
+			return -1;
+		}
 		if (record_value[i] > max_value + Constants::PRECISION || record_value[i] < min_value - Constants::PRECISION)
 		{
 			cerr << "Outside validity area of " << grd_file << endl;

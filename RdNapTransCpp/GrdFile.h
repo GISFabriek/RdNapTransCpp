@@ -1,3 +1,12 @@
+// ***********************************************************************
+// Author           : Willem A. Ligtendag, De GISFabriek
+// Created          : 07-06-2019
+//
+// Last Modified By : Willem A. Ligtendag, De GISFabriek
+// Last Modified On : 07-07-2019
+// ***********************************************************************
+// C++ PORT from C version of RDNAPTRANS
+// ***********************************************************************
 #pragma once
 #include <string>
 

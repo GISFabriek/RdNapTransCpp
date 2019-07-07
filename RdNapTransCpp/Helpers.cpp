@@ -1,3 +1,12 @@
+// ***********************************************************************
+// Author           : Willem A. Ligtendag, De GISFabriek
+// Created          : 07-06-2019
+//
+// Last Modified By : Willem A. Ligtendag, De GISFabriek
+// Last Modified On : 07-07-2019
+// ***********************************************************************
+// C++ PORT from C version of RDNAPTRANS
+// ***********************************************************************
 #include <cmath>
 #include "Helpers.h"
 #include "Constants.h"
@@ -7,11 +16,6 @@
 const std::string GRID_FILE_DX = "x2c.grd";
 const std::string GRID_FILE_DY = "y2c.grd";
 const std::string GRID_FILE_GEOID = "nlgeo04.grd";
-/*
-**--------------------------------------------------------------
-**    Functions
-**--------------------------------------------------------------
-*/
 
 /*
 **--------------------------------------------------------------
@@ -201,7 +205,7 @@ void Helpers::decimal2deg_min_sec(double dec_deg, int& deg, int& min, double& se
 **    phi      latitude in degrees
 **    lambda   longitude in degrees
 **    h        ellipsoidal height
-**    a        half major axis of the ellisoid
+**    a        half major axis of the ellipsoid
 **    inv_f    inverse flattening of the ellipsoid
 **    x, y, z  output of cartesian coordinates
 **
@@ -252,7 +256,7 @@ void Helpers::geographic2cartesian(double phi, double lambda, double h,
 **
 **    Additional explanation of the meaning of parameters
 **    x, y, z  input of cartesian coordinates
-**    a        half major axis of the ellisoid
+**    a        half major axis of the ellipsoid
 **    inv_f    inverse flattening of the ellipsoid
 **    phi      output latitude in degrees
 **    lambda   output longitude in degrees
@@ -450,7 +454,7 @@ void Helpers::rd_projection(double phi, double lambda,
 	**        r_sphere                  radius of sphere
 	**
 	**        n                         constant of Gaussian projection n = 1.000475...
-	**        q_amersfoort              isometric latitude of Amersfoort on ellipsiod
+	**        q_amersfoort              isometric latitude of Amersfoort on ellipsoid
 	**        w_amersfoort              isometric latitude of Amersfoort on sphere
 	**        m                         constant of Gaussian projection m = 0.003773... (also named c in some notations)
 	**--------------------------------------------------------------
@@ -475,9 +479,9 @@ void Helpers::rd_projection(double phi, double lambda,
 	/*
 	**--------------------------------------------------------------
 	**    Explanation of the meaning of variables:
-	**        q                    isometric latitude on ellipsiod
+	**        q                    isometric latitude on ellipsoid
 	**        w                    isometric latitude on sphere
-	**        phi_sphere           latitide on sphere in degrees
+	**        phi_sphere           latitude on sphere in degrees
 	**        delta_lambda_sphere  difference in longitude on sphere with Amersfoort in degrees
 	**        psi                  distance angle from Amersfoort on sphere
 	**        alpha                azimuth from Amersfoort

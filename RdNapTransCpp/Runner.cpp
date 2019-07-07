@@ -1,3 +1,12 @@
+// ***********************************************************************
+// Author           : Willem A. Ligtendag, De GISFabriek
+// Created          : 07-06-2019
+//
+// Last Modified By : Willem A. Ligtendag, De GISFabriek
+// Last Modified On : 07-07-2019
+// ***********************************************************************
+// C++ PORT from C version of RDNAPTRANS
+// ***********************************************************************
 /*
 **--------------------------------------------------------------
 **    Function name: main
@@ -20,7 +29,7 @@ using namespace  std;
 
 int main()
 {
-	int choice = 9;
+	auto choice = 9;
 	double x_rd, y_rd, nap, phi, lambda, h;
 
 	cout << endl;

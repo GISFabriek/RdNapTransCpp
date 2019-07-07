@@ -1,3 +1,12 @@
+// ***********************************************************************
+// Author           : Willem A. Ligtendag, De GISFabriek
+// Created          : 07-06-2019
+//
+// Last Modified By : Willem A. Ligtendag, De GISFabriek
+// Last Modified On : 07-07-2019
+// ***********************************************************************
+// C++ PORT from C version of RDNAPTRANS
+// ***********************************************************************
 #pragma once
 #include "Cartesian.h"
 #include "Geographic.h"
@@ -18,8 +27,8 @@ public:
 	static int rdnap2etrs(double x_rd, double y_rd, double nap,
 		double& phi, double& lambda, double& h);
 
-	static Cartesian etrs2rd(Geographic etrs);
-	static Geographic rd2etrs(Cartesian rd);
-	static Cartesian etrs2rdnap(Geographic etrs);
-	static Geographic rdnap2etrs(Cartesian rd);
+	static Cartesian etrs2rd(const Geographic& etrs);
+	static Geographic rd2etrs(const Cartesian& rd);
+	static Cartesian etrs2rdnap(const Geographic& etrs);
+	static Geographic rdnap2etrs(const Cartesian& rd);
 };

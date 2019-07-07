@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("RdNapTransCpp")
+project ("RdNapTrans")
 
 # Include sub-projects.
 add_subdirectory ("RdNapTransCpp")

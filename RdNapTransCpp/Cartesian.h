@@ -1,5 +1,17 @@
+// ***********************************************************************
+// Author           : Willem A. Ligtendag, De GISFabriek
+// Created          : 07-06-2019
+//
+// Last Modified By : Willem A. Ligtendag, De GISFabriek
+// Last Modified On : 07-07-2019
+// ***********************************************************************
+// C++ PORT from C version of RDNAPTRANS
+// ***********************************************************************
 #pragma once
-
+//!  Cartesian class. 
+/*
+  Encapsulates the x, y and z coordinates of a cartesian point.
+*/
 class Cartesian {
 	double m_x, m_y, m_z;
 public:
