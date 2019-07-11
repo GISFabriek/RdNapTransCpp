@@ -3,7 +3,7 @@
 // Created          : 07-06-2019
 //
 // Last Modified By : Willem A. Ligtendag, De GISFabriek
-// Last Modified On : 07-07-2019
+// Last Modified On : 07-11-2019
 // ***********************************************************************
 // C++ PORT from C version of RDNAPTRANS
 // ***********************************************************************
@@ -18,6 +18,7 @@ public:
 **    Mathematical constant pi = 3.14...
 **--------------------------------------------------------------
 */
+	/* Bit of an exaggeration to have this many numbers behind the decimal separator, but let's leave them. No harm here.*/
 	static constexpr double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899863;
 	/*
 	**--------------------------------------------------------------

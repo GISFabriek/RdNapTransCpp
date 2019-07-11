@@ -3,7 +3,7 @@
 // Created          : 07-06-2019
 //
 // Last Modified By : Willem A. Ligtendag, De GISFabriek
-// Last Modified On : 07-07-2019
+// Last Modified On : 07-11-2019
 // ***********************************************************************
 // C++ PORT from C version of RDNAPTRANS
 // ***********************************************************************
@@ -12,7 +12,7 @@
 #include "Helpers.h"
 #include "GrdFile.h"
 
-const std::string GRID_FILE_GEOID = "nlgeo04.grd";
+const std::string GRID_FILE_GEOID = "nlgeo04.b64";
 
 /*
 **--------------------------------------------------------------

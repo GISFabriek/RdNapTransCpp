@@ -3,7 +3,7 @@
 // Created          : 07-06-2019
 //
 // Last Modified By : Willem A. Ligtendag, De GISFabriek
-// Last Modified On : 07-07-2019
+// Last Modified On : 07-11-2019
 // ***********************************************************************
 // C++ PORT from C version of RDNAPTRANS
 // ***********************************************************************
@@ -11,11 +11,12 @@
 #include "Helpers.h"
 #include "Constants.h"
 #include  "GrdFile.h"
+#include <cmrc/cmrc.hpp>
 
-
-const std::string GRID_FILE_DX = "x2c.grd";
-const std::string GRID_FILE_DY = "y2c.grd";
-const std::string GRID_FILE_GEOID = "nlgeo04.grd";
+CMRC_DECLARE(rdnaptransrc);
+const std::string GRID_FILE_DX = "x2c.b64";
+const std::string GRID_FILE_DY = "y2c.b64";
+const std::string GRID_FILE_GEOID = "nlgeo04.b64";
 
 /*
 **--------------------------------------------------------------

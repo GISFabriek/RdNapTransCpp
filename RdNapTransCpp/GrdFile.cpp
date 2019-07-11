@@ -3,19 +3,52 @@
 // Created          : 07-06-2019
 //
 // Last Modified By : Willem A. Ligtendag, De GISFabriek
-// Last Modified On : 07-07-2019
+// Last Modified On : 07-11-2019
 // ***********************************************************************
 // C++ PORT from C version of RDNAPTRANS
 // ***********************************************************************
 #include "GrdFile.h"
 #include <cmath>
 #include <string>
-#include <fstream>
-#include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include "Constants.h"
+#include "../out/build/x64-Debug/_cmrc/include/cmrc/cmrc.hpp"
+
+CMRC_DECLARE(rdnaptransrc);
 using namespace std;
 
+// character string used for decoding the base64 encoded Grid strings
+static const std::string base64_chars =
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+"abcdefghijklmnopqrstuvwxyz"
+"0123456789+/";
+
+/*
+**--------------------------------------------------------------
+**    Function name: get_decoded_string
+**    Description:   extracts a decoded string from a resource file containing a base64 encoded string
+**    (converted from a .grd file)
+**
+**    Parameter        Type                In/Out Req/Opt Default
+**    file_name        std::string         in     req     none
+**    result           std::string         out    req      -
+**    Additional explanation of the meaning of parameters
+**    file_name contains the name of the resource file
+**    Return value: (besides the standard return values)
+**    none
+**--------------------------------------------------------------
+*/
+std::string GrdFile::get_decoded_string(const std::string& file_name)
+{
+	const auto fs = cmrc::rdnaptransrc::get_filesystem();
+	const auto ff = fs.open(file_name);
+
+
+	const std::stringstream string_stream(ff.cbegin());
+	auto decoded = base64_decode(string_stream.str());
+	return decoded;
+}
 /*
 **--------------------------------------------------------------
 **    Function name: read_grd_file_header
@@ -33,7 +66,7 @@ using namespace std;
 **    max_value      double      out    -       none
 **
 **    Additional explanation of the meaning of parameters
-**    filename   name of the to be read binary file
+**    decoded_string   the decoded string to be read
 **    size_x     number of grid values in x direction (row)
 **    size_y     number of grid values in y direction (col)
 **    min_x      minimum of x
@@ -47,8 +80,7 @@ using namespace std;
 **    none
 **--------------------------------------------------------------
 */
-
-	int GrdFile::read_grd_file_header(const string& file_name,
+	int GrdFile::read_grd_file_header(const string& decoded_string,
 		short int& size_x, short int& size_y,
 		double& min_x, double& max_x,
 		double& min_y, double& max_y,
@@ -58,38 +90,28 @@ using namespace std;
 	**--------------------------------------------------------------
 	**    Grd files are binary grid files in the format of the program Surfer(R)
 	**--------------------------------------------------------------
-	*/
-
-	fstream file(file_name.c_str(), ios::in | ios::binary);
-
-	/*
 	**--------------------------------------------------------------
 	**    Read file id
 	**--------------------------------------------------------------
 	*/
 	char id[5];
-	for (auto i = 0; i < 4; i = i + 1)
+	auto decoded_pos = 0;
+	auto counter = 0;
+	for (; decoded_pos < 4; decoded_pos++)
 	{
-		file.seekg(i, ios::beg);
-		file.read(static_cast<char*>(&id[i]), 1);
+		id[counter++] = decoded_string[decoded_pos];
 	}
 	id[4] = '\0';
 	const auto id_string = string(id);
 
 	/*
 	**--------------------------------------------------------------
-	**    Checks
+	**    Check
 	**--------------------------------------------------------------
 	*/
-	if (!file)
-	{
-		cerr << file_name << " does not exist" << endl;
-		return -1;
-	}
-
 	if (id_string != "DSBB")
 	{
-		cerr << file_name << " is not a valid grd file" << endl;
+		cerr << "not a valid grd resource" << endl;
 		return -1;
 	}
 
@@ -98,34 +120,17 @@ using namespace std;
 	**    Read output parameters
 	**--------------------------------------------------------------
 	*/
-	file.seekg(4, ios::beg);
-	file.read(reinterpret_cast<char*>(&size_x), 2);
-
-	file.seekg(6, ios::beg);
-	file.read(reinterpret_cast<char*>(&size_y), 2);
-
-
-	file.seekg(8, ios::beg);
-	file.read(reinterpret_cast<char*>(&min_x), 8);
-
-	file.seekg(16, ios::beg);
-	file.read(reinterpret_cast<char*>(&max_x), 8);
-
-	file.seekg(24, ios::beg);
-	file.read(reinterpret_cast<char*>(&min_y), 8);
-
-	file.seekg(32, ios::beg);
-	file.read(reinterpret_cast<char*>(&max_y), 8);
-
-	file.seekg(40, ios::beg);
-	file.read(reinterpret_cast<char*>(&min_value), 8);
-
-	file.seekg(48, ios::beg);
-	file.read(reinterpret_cast<char*>(&max_value), 8);
+	extract_short(decoded_string, decoded_pos, size_x);
+	extract_short(decoded_string, decoded_pos, size_y);
+	extract_double(decoded_string, decoded_pos, min_x);
+	extract_double(decoded_string, decoded_pos, max_x);
+	extract_double(decoded_string, decoded_pos, min_y);
+	extract_double(decoded_string, decoded_pos, max_y);
+	extract_double(decoded_string, decoded_pos, min_value);
+	extract_double(decoded_string, decoded_pos, max_value);
 
 	return 0;
 }
-
 
 /*
 **--------------------------------------------------------------
@@ -133,12 +138,12 @@ using namespace std;
 **    Description:   reads a value from a grd file
 **
 **    Parameter      Type        In/Out Req/Opt Default
-**    filename       string      in     req     none
+**    decoded_string std::string in     req     none
 **    number         long int    in     req     none
 **    value          float       out    -       none
 **
 **    Additional explanation of the meaning of parameters
-**    filename       name of the grd file to be read
+**    decoded_string   the decoded string to be read
 **    record_number  number defining the position in the file
 **    record_value   output of the read value
 **
@@ -147,11 +152,11 @@ using namespace std;
 **--------------------------------------------------------------
 */
 
-int GrdFile::read_grd_file_body(const string& file_name, long int record_number, float& record_value)
+int GrdFile::read_grd_file_body(const string& decoded_string, long int record_number, float& record_value)
 {
 	const auto record_length = 4;
 	const auto header_length = 56;
-
+	
 	/*
 	**--------------------------------------------------------------
 	**    Read
@@ -161,20 +166,16 @@ int GrdFile::read_grd_file_body(const string& file_name, long int record_number,
 	**    The records have a "record_number", starting with 0,1,2,...
 	**--------------------------------------------------------------
 	*/
-	fstream file(file_name.c_str(), ios::in | ios::binary);
-	file.seekg(record_length * record_number + header_length, ios::beg);
-	file.read(reinterpret_cast<char*>(&record_value), record_length);
 
-	/*
-	**--------------------------------------------------------------
-	**    Checks
-	**--------------------------------------------------------------
-	*/
-	if (!file)
+	const auto start = header_length + record_number * record_length;
+	char record[record_length]{};
+	auto counter = 0;
+	for (auto i = start; i < start + record_length; i++)
 	{
-		cerr << file_name << " does not exist" << endl;
-		return -1;
+		record[counter++] = decoded_string[i];
 	}
+	memcpy(&record_value, &record, sizeof(record_value));
+
 	return 0;
 }
 
@@ -208,7 +209,7 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 	float record_value[16];
 	double f[4], g[4];
 	double gfac[16];
-
+	const auto decoded = get_decoded_string(grd_file);
 	/*
 	**--------------------------------------------------------------
 	**    Explanation of the meaning of variables:
@@ -222,7 +223,15 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 	**    max_value  maximum value in grid (besides the error values)
 	**--------------------------------------------------------------
 	*/
-	auto error = read_grd_file_header(grd_file, size_x, size_y, min_x, max_x, min_y, max_y, min_value, max_value);
+	auto error = read_grd_file_header(decoded, size_x, size_y, min_x, max_x, min_y, max_y, min_value, max_value);
+	cout << "size_x: " << size_x << endl;
+	cout << "size_y: " << size_y << endl;
+	cout << "min_x: " << min_x << endl;
+	cout << "max_x: " << max_x << endl;
+	cout << "min_y: " << min_y << endl;
+	cout << "max_y: " << max_y << endl;
+	cout << "min_value: " << min_value << endl;
+	cout << "max_value: " << max_value << endl << endl;
 	if (error != 0)
 	{
 		return -1;
@@ -240,9 +249,9 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 		y <= (min_y + step_size_y) || y >= (max_y - step_size_y))
 	{
 		cerr << "Outside bounding box of " << grd_file << endl;
-		if (grd_file == "x2c.grd") { error = 1; value = 0.0; }
-		if (grd_file == "y2c.grd") { error = 2; value = 0.0; }
-		if (grd_file == "nlgeo04.grd") error = 3;
+		if (grd_file == "x2c.b64") { error = 1; value = 0.0; }
+		if (grd_file == "y2c.b64") { error = 2; value = 0.0; }
+		if (grd_file == "nlgeo04.b64") error = 3;
 		return error;
 	}
 
@@ -300,7 +309,7 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 	*/
 	for (auto i = 0; i < 16; i++)
 	{
-		error = read_grd_file_body(grd_file, record_number[i], record_value[i]);
+		error = read_grd_file_body(decoded, record_number[i], record_value[i]);
 		if (error != 0)
 		{
 			return -1;
@@ -308,9 +317,9 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 		if (record_value[i] > max_value + Constants::PRECISION || record_value[i] < min_value - Constants::PRECISION)
 		{
 			cerr << "Outside validity area of " << grd_file << endl;
-			if (grd_file == "x2c.grd") { error = 1; value = 0.0; }
-			if (grd_file == "y2c.grd") { error = 2; value = 0.0; }
-			if (grd_file == "nlgeo04.grd") error = 3;
+			if (grd_file == "x2c.b64") { error = 1; value = 0.0; }
+			if (grd_file == "y2c.b64") { error = 2; value = 0.0; }
+			if (grd_file == "nlgeo04.b64") error = 3;
 			return error;
 		}
 	}
@@ -359,4 +368,142 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 	}
 
 	return 0;
+}
+
+/*
+**--------------------------------------------------------------
+**    Function name: base64_decode
+**    Description:   decodes a base64 encoded string
+**
+**    Parameter      Type              In/Out Req/Opt Default
+**    encoded_string std::string       in     req     none
+**    value          std::string       out    -       none
+**
+**    Additional explanation of the meaning of parameters
+**    Returns the base64 decoded equivalent of the input string
+**    Return value: (besides the standard return values)
+**    none
+**--------------------------------------------------------------
+*/
+
+std::string GrdFile::base64_decode(std::string const& encoded_string) {
+	auto in_len = encoded_string.size();
+	auto i = 0;
+	auto encoded_string_counter = 0;
+	unsigned char char_array_4[4], char_array_3[3];
+	std::string return_value;
+
+	while (in_len-- && (encoded_string[encoded_string_counter] != '=') && is_base64(encoded_string[encoded_string_counter]))
+	{
+		char_array_4[i++] = encoded_string[encoded_string_counter++];
+		if (i == 4) {
+			for (i = 0; i < 4; i++)
+			{
+				char_array_4[i] = base64_chars.find(char_array_4[i]) & 0xff;
+			}
+
+			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+			char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+			for (i = 0; (i < 3); i++)
+			{
+				return_value += char_array_3[i];
+			}
+			i = 0;
+		}
+	}
+
+	if (i) {
+		for (auto j = 0; j < i; j++)
+		{
+			char_array_4[j] = base64_chars.find(char_array_4[j]) & 0xff;
+		}
+
+		char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+		char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+
+		for (auto j = 0; (j < i - 1); j++)
+		{
+			return_value += char_array_3[j];
+		}
+	}
+
+	return return_value;
+}
+
+/*
+**--------------------------------------------------------------
+**    Function name: is_base64
+**    Description:   checks if a character is base64 encoded
+**
+**    Parameter      Type                In/Out Req/Opt Default
+**    c              unsigned char       in     req     none
+**    value          bool                out    -       none
+**
+**    Additional explanation of the meaning of parameters
+**
+**    Return value: (besides the standard return values)
+**    none
+**--------------------------------------------------------------
+*/
+bool GrdFile::is_base64(unsigned char c) {
+	return (isalnum(c) || (c == '+') || (c == '/'));
+}
+
+/*
+**--------------------------------------------------------------
+**    Function name: extract_short
+**    Description:   extracts a short value from 2 bytes (chars) in a base64 decoded string
+**
+**    Parameter        Type                In/Out Req/Opt Default
+**    decoded_string   std::string         in     req     none
+**    decoded_pos      int&                in     req     none
+**    result           short&              out    -       none
+**    Additional explanation of the meaning of parameters
+**    The position in the decoded file (decoded_pos) is a reference because it is updated in the method itself
+**    The result variable is a reference because it contains the desired value after the method returns
+**    Return value: (besides the standard return values)
+**    none
+**--------------------------------------------------------------
+*/
+void GrdFile::extract_short(std::string decoded_string, int& decoded_pos, short& result)
+{
+	char int_array[2]{};
+	auto counter = 0;
+	const auto end = decoded_pos + 2;
+	for (; decoded_pos < end; decoded_pos++)
+	{
+		int_array[counter++] = decoded_string[decoded_pos];
+	}
+
+	memcpy(&result, int_array, sizeof result);
+}
+
+/*
+**--------------------------------------------------------------
+**    Function name: extract_double
+**    Description:   extracts a short value from 2 bytes (chars) in a base64 decoded string
+**
+**    Parameter        Type                In/Out Req/Opt Default
+**    decoded_string   std::string         in     req     none
+**    decoded_pos      int&                in     req     none
+**    result           double&             out    -       none
+**    Additional explanation of the meaning of parameters
+**    The position in the decoded file (decoded_pos) is a reference because it is updated in the method itself
+**    The result variable is a reference because it contains the desired value after the method returns
+**    Return value: (besides the standard return values)
+**    none
+**--------------------------------------------------------------
+*/
+void GrdFile::extract_double(std::string decoded_string, int& decoded_pos, double& result)
+{
+	char double_array[8]{};
+	auto counter = 0;
+	const auto end = decoded_pos + 8;
+	for (; decoded_pos < end; decoded_pos++)
+	{
+		double_array[counter++] = decoded_string[decoded_pos];
+	}
+	memcpy(&result, double_array, sizeof result);
 }
