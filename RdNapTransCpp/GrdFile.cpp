@@ -9,11 +9,14 @@
 // ***********************************************************************
 #include "GrdFile.h"
 #include <cmath>
+#include <cstring>
 #include <string>
 #include <iostream>
 #include <sstream>
 #include "Constants.h"
-#include "../out/build/x64-Debug/_cmrc/include/cmrc/cmrc.hpp"
+
+// Need to change this path on Linux (for g++) to something like "../cmake-build-debug/_cmrc/include/cmrc/cmrc.hpp"
+#include "../out/build/x64-Debug/_cmrc/include/cmrc/cmrc.hpp"  
 
 CMRC_DECLARE(rdnaptransrc);
 using namespace std;
