@@ -15,8 +15,12 @@
 #include <sstream>
 #include "Constants.h"
 
-// Need to change this path on Linux (for g++) to something like "../cmake-build-debug/_cmrc/include/cmrc/cmrc.hpp"
-#include "../out/build/x64-Debug/_cmrc/include/cmrc/cmrc.hpp"  
+#ifdef _MSC_VER  // If Visual C++ is used
+#include "../out/build/x64-Debug/_cmrc/include/cmrc/cmrc.hpp"
+#else // If GCC or CLang is used
+#include "../cmake-build-debug/_cmrc/include/cmrc/cmrc.hpp"
+#endif
+
 
 CMRC_DECLARE(rdnaptransrc);
 using namespace std;
