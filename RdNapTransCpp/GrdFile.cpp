@@ -256,9 +256,20 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 		y <= (min_y + step_size_y) || y >= (max_y - step_size_y))
 	{
 		cerr << "Outside bounding box of " << grd_file << endl;
-		if (grd_file == "x2c.b64") { error = 1; value = 0.0; }
-		if (grd_file == "y2c.b64") { error = 2; value = 0.0; }
-		if (grd_file == "nlgeo04.b64") error = 3;
+		if (grd_file == "x2c.b64")
+		{
+			error = 1;
+			value = 0.0;
+		}
+		if (grd_file == "y2c.b64")
+		{
+			error = 2;
+			value = 0.0;
+		}
+		if (grd_file == "nlgeo04.b64")
+		{
+			error = 3;
+		}
 		return error;
 	}
 
@@ -324,9 +335,18 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 		if (record_value[i] > max_value + Constants::PRECISION || record_value[i] < min_value - Constants::PRECISION)
 		{
 			cerr << "Outside validity area of " << grd_file << endl;
-			if (grd_file == "x2c.b64") { error = 1; value = 0.0; }
-			if (grd_file == "y2c.b64") { error = 2; value = 0.0; }
-			if (grd_file == "nlgeo04.b64") error = 3;
+			if (grd_file == "x2c.b64")
+			{
+				error = 1; value = 0.0;
+			}
+			if (grd_file == "y2c.b64")
+			{
+				error = 2; value = 0.0;
+			}
+			if (grd_file == "nlgeo04.b64")
+			{
+				error = 3;
+			}
 			return error;
 		}
 	}
@@ -374,7 +394,7 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 		value += gfac[i] * record_value[i];
 	}
 
-	return 0;
+	return error;
 }
 
 /*

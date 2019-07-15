@@ -289,12 +289,8 @@ int Transformer::etrs2nap(double phi, double lambda, double h,
 {
 	double n;
 	const auto error = GrdFile::grid_interpolation(lambda, phi, GRID_FILE_GEOID, n);
-	if (error != 0)
-	{
-		return error;
-	}
 	nap = h - n + 0.0088;
-	return 0;
+	return error;
 }
 
 /*
@@ -324,12 +320,8 @@ int Transformer::nap2etrs(double phi, double lambda, double nap,
 {
 	double n;
 	const auto error = GrdFile::grid_interpolation(lambda, phi, GRID_FILE_GEOID, n);
-	if (error != 0)
-	{
-		return error;
-	}
 	h = nap + n - 0.0088;
-	return 0;
+	return error;
 }
 
 /*
@@ -358,16 +350,16 @@ int Transformer::etrs2rdnap(double phi, double lambda, double h,
 {
 	double h_bessel, h_geoid;
 	auto error = etrs2rd(phi, lambda, h, x_rd, y_rd, h_bessel);
-	if (error != 0)
-	{
-		return error;
-	}
 	error = etrs2nap(phi, lambda, h, h_geoid);
 	if (error == 3)
 	{
 		nap = h_bessel;
 	}
-	else nap = h_geoid;
+	else
+	{
+		nap = h_geoid;
+	}
+
 	return error;
 }
 
@@ -397,10 +389,6 @@ int Transformer::rdnap2etrs(double x_rd, double y_rd, double nap,
 {
 	double h_etrs_sim, h_etrs_geoid;
 	auto error = rd2etrs(x_rd, y_rd, nap, phi, lambda, h_etrs_sim);
-	if (error != 0)
-	{
-		return error;
-	}
 	error = nap2etrs(phi, lambda, nap, h_etrs_geoid);
 	if (error == 3)
 	{

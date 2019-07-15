@@ -644,14 +644,20 @@ int Helpers::rd_correction(double x_pseudo_rd, double y_pseudo_rd,
 {
 	double dx, dy;
 
-	auto error = GrdFile::grid_interpolation(x_pseudo_rd, y_pseudo_rd, GRID_FILE_DX, dx);
-	if (error != 0)
-	{
-		return error;
-	}
-	error = GrdFile::grid_interpolation(x_pseudo_rd, y_pseudo_rd, GRID_FILE_DY, dy);
+	auto xerror = GrdFile::grid_interpolation(x_pseudo_rd, y_pseudo_rd, GRID_FILE_DX, dx);
+	
+	auto yerror = GrdFile::grid_interpolation(x_pseudo_rd, y_pseudo_rd, GRID_FILE_DY, dy);
 	x_rd = x_pseudo_rd - dx;
 	y_rd = y_pseudo_rd - dy;
+	int error;
+	if (xerror != 0)
+	{
+		error = xerror;
+	}
+	else
+	{
+		error = yerror;
+	}
 	return error;
 }
 
@@ -686,14 +692,19 @@ int Helpers::inv_rd_correction(double x_rd, double y_rd,
 	*/
 	x_pseudo_rd = x_rd;
 	y_pseudo_rd = y_rd;
-	auto error = GrdFile::grid_interpolation(x_pseudo_rd, y_pseudo_rd, GRID_FILE_DX, dx);
-	if (error != 0)
-	{
-		return error;
-	}
-	error = GrdFile::grid_interpolation(x_pseudo_rd, y_pseudo_rd, GRID_FILE_DY, dy);
+	auto xerror = GrdFile::grid_interpolation(x_pseudo_rd, y_pseudo_rd, GRID_FILE_DX, dx);	
+	auto yerror = GrdFile::grid_interpolation(x_pseudo_rd, y_pseudo_rd, GRID_FILE_DY, dy);
 	x_pseudo_rd = x_rd + dx;
 	y_pseudo_rd = y_rd + dy;
+	int error;
+	if (xerror != 0)
+	{
+		error = xerror;
+	}
+	else
+	{
+		error = yerror;
+	}
 	return error;
 }
 
