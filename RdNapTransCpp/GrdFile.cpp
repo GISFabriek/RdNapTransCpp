@@ -231,14 +231,6 @@ int GrdFile::grid_interpolation(double x, double y, const string& grd_file, doub
 	**--------------------------------------------------------------
 	*/
 	auto error = read_grd_file_header(decoded, size_x, size_y, min_x, max_x, min_y, max_y, min_value, max_value);
-	cout << "size_x: " << size_x << endl;
-	cout << "size_y: " << size_y << endl;
-	cout << "min_x: " << min_x << endl;
-	cout << "max_x: " << max_x << endl;
-	cout << "min_y: " << min_y << endl;
-	cout << "max_y: " << max_y << endl;
-	cout << "min_value: " << min_value << endl;
-	cout << "max_value: " << max_value << endl << endl;
 	if (error != 0)
 	{
 		return -1;
